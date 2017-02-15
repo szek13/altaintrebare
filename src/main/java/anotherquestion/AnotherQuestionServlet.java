@@ -2,13 +2,13 @@ package anotherquestion;
 
 import org.json.JSONObject;
 
-
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.List;
 
 /**
  * Created by icondor on 04/02/17.
@@ -17,7 +17,10 @@ import java.io.PrintWriter;
 @WebServlet("/aq")
 public class AnotherQuestionServlet extends HttpServlet {
 
-    public void service(HttpServletRequest request, HttpServletResponse response) {
+  public void service(HttpServletRequest request, HttpServletResponse response) {
+
+      List listaCititaDinDB;
+
 
         String action = request.getParameter("action");
         if(action!=null && action.equals("list"))
@@ -26,30 +29,50 @@ public class AnotherQuestionServlet extends HttpServlet {
 
             //fac jsonul
             JSONObject json = new JSONObject();
-            json.put("questions",SingleList.getInstance().getIntrebari());
-            String result=json.toString();
+
+          //  json.put("questions",SingleList.getInstance().getIntrebari());
+
+
+            CsongorDB csdb = new CsongorDB();
+            listaCititaDinDB =  csdb.getFaqList(); // returneaza o lista cu tot ce e in db
+
+            json.put("questions",listaCititaDinDB);
+
+            String result = json.toString();
             System.out.println("result:"+result);
             returnJsonResponse(response, result);
 
+
+          //  String result=json.toString();
+
+            System.out.println("result:"+result);
+            returnJsonResponse(response, result);
 
             /*
 
         {"tasks":[{"name":"prima intrebare"},{"name":"a doua intrebare"}]}
 
              */
-
         }
 
         else {
 
+
             System.out.println("voi adauga in lista");
-            String intrebarea = request.getParameter("value");
+            String question = request.getParameter("value");
+            String answer = request.getParameter("value");
 
 
-            SingleList.getInstance().addIntrebare(intrebarea);
+        //    SingleList.getInstance().addIntrebare(intrebarea);
 
 
-            SingleList.getInstance().afiseza();
+         //   SingleList.getInstance().afiseza();
+
+
+            CsongorDB csdb = new CsongorDB();
+            csdb.insert(question,answer);
+
+
             System.out.println("------------");
         }
 
